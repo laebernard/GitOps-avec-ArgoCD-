@@ -15,7 +15,7 @@ spec:
 
   source:
     # TODO : URL de votre fork.
-    repoURL: https://github.com/<votre-handle>/devhub-campus.git
+    repoURL: https://github.com/laebernard/GitOps-avec-ArgoCD-.git
     targetRevision: main
     # TODO : chemin vers le chart Helm du service.
     path: services/annuaire/chart
@@ -32,9 +32,9 @@ spec:
   syncPolicy:
     # TODO étape 5 : commencez en manuel (commentez le bloc automated).
     # Puis basculez en auto avec selfHeal:true / prune:false une fois validé.
-    automated:
-      prune: false
-      selfHeal: true
+    # automated:
+    #   prune: false
+    #   selfHeal: true
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
