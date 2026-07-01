@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/laebernard/GitOps-avec-ArgoCD-.git
     targetRevision: main
-    path: platform/apps/preview
+    path: apps/preview
     directory:
       recurse: true
   destination:
