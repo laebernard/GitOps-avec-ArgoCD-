@@ -16,9 +16,15 @@ metadata:
   name: annuaire-preview
   namespace: argocd
 spec:
+  goTemplate: true
   # TODO étape 7 (défi) : ajoutez `goTemplate: true` si vous voulez utiliser
   # la syntaxe Go-template (plus puissante mais nouvelle).
   generators:
+    - git:
+        repoURL: https://github.com/laebernard/GitOps-avec-ArgoCD-.git
+        revision: HEAD
+        branches:
+          - feature/*
     # TODO : choisissez UN seul generator (commentez l'autre).
     #
     # Option A — git generator sur les branches feature/* :
@@ -40,7 +46,7 @@ spec:
     #         secretName: github-token
     #         key: token
     #     requeueAfterSeconds: 60
-    []
+
 
   template:
     metadata:
@@ -50,14 +56,14 @@ spec:
       #   - git generator (branches) : {{branch}}, {{branchNormalized}}
       # Le squelette ci-dessous est calibré pour pullRequest generator.
       # Si vous choisissez git, remplacez {{branch_slug}} par {{branchNormalized}}.
-      name: annuaire-preview-{{branch_slug}}
+      name: annuaire-preview-{{branchNormalized}}
       labels:
         devhub.io/env: preview
         devhub.io/service: annuaire
     spec:
       project: devhub
       source:
-        repoURL: https://github.com/<votre-handle>/devhub-campus.git
+        repoURL: https://github.com/laebernard/GitOps-avec-ArgoCD-.git
         targetRevision: '{{branch}}'
         path: services/annuaire/chart
         helm:
@@ -69,7 +75,7 @@ spec:
       destination:
         server: https://kubernetes.default.svc
         # TODO : le namespace doit être unique par preview.
-        namespace: devhub-preview-{{branch_slug}}
+        namespace: devhub-preview-{{branchNormalized}}
       syncPolicy:
         automated:
           prune: true       # IMPORTANT : indispensable pour nettoyer les previews
