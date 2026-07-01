@@ -31,6 +31,9 @@ spec:
   destinations:
     - server: https://kubernetes.default.svc
       namespace: devhub-*
+    - server: https://kubernetes.default.svc
+      namespace: argocd
+
 
   # TODO : restreignez les ressources cluster-scoped que ce projet peut créer.
   # En l'état, vide = rien d'autorisé. C'est sûr mais ça bloque la création
