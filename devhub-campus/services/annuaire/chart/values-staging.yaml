@@ -1,0 +1,9 @@
+# Surcharges pour l environnement staging.
+replicaCount: 2
+
+ingress:
+  enabled: true
+  host: annuaire-staging.devhub.local
+
+env:
+  LOG_LEVEL: info

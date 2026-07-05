@@ -162,3 +162,45 @@ resultat : ok true service annuaire
 
 ghcr.io/laebernard/annuaire-service:e31ef74
 digest: sha256:ac680ca4273feb725b7d0c4b94dcf2a89e4b4d316d320f55115a22c3c1851e07
+
+
+---
+
+## Etape 4 - Chart Helm de annuaire-service
+
+Le chart se trouve dans devhub-campus/services/annuaire/chart/
+
+Structure du chart :
+- Chart.yaml : metadonnees du chart (nom, version, description)
+- values.yaml : valeurs par defaut
+- values-dev.yaml : surcharges pour dev (ingress active, LOG_LEVEL=debug)
+- values-staging.yaml : surcharges pour staging (2 repliques)
+- values-preview.yaml : surcharges pour preview (1 replique, ressources reduites)
+- templates/_helpers.tpl : labels communs
+- templates/deployment.yaml : deploiement avec probes et securityContext
+- templates/service.yaml : service ClusterIP
+- templates/ingress.yaml : ingress conditionnel
+
+Labels obligatoires sur chaque ressource :
+- app.kubernetes.io/name
+- app.kubernetes.io/instance
+- app.kubernetes.io/part-of: devhub-campus
+- app.kubernetes.io/managed-by: Helm
+
+Probes configurees sur /healthz :
+- readinessProbe : initialDelaySeconds 2, periodSeconds 5
+- livenessProbe : initialDelaySeconds 10, periodSeconds 10
+
+Image utilisee : ghcr.io/laebernard/annuaire-service:e31ef74
+Utilisateur non-root : runAsUser 1001 (aligne avec le Dockerfile)
+
+### Validation
+
+helm lint chart/
+resultat : 1 chart linted, 0 chart failed
+
+helm template chart/ -f chart/values-dev.yaml | kubectl apply --dry-run=client -f -
+resultat :
+service/release-name-annuaire created (dry run)
+deployment.apps/release-name-annuaire created (dry run)
+ingress.networking.k8s.io/release-name-annuaire created (dry run)
