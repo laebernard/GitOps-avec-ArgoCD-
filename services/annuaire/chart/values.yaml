@@ -3,9 +3,9 @@
 
 image:
   # TODO : votre repo GHCR.
-  repository: nginx
+  repository: hashicorp/http-echo
   # TODO : remplir au déploiement avec le SHA court.
-  tag: "alpine"
+  tag: "1.0"
   pullPolicy: IfNotPresent
 
 # TODO : combien de répliques par défaut ?
@@ -14,7 +14,7 @@ replicaCount: 2
 service:
   type: ClusterIP
   port: 80
-  targetPort: 8080
+  targetPort: 5678
 
 ingress:
   enabled: false
@@ -50,10 +50,10 @@ securityContext:
 
 probes:
   readiness:
-    path: /healthz
+    path: /
     initialDelaySeconds: 2
     periodSeconds: 5
   liveness:
-    path: /healthz
+    path: /
     initialDelaySeconds: 10
     periodSeconds: 10

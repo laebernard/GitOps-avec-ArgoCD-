@@ -23,6 +23,8 @@ spec:
         - name: annuaire
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "-text=ok"
 
           ports:
             - containerPort: {{ .Values.service.targetPort }}
