@@ -26,6 +26,9 @@ spec:
     namespace: devhub-dev
 
   syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
     # Puis basculez en auto avec selfHeal:true / prune:false une fois validé.
     # automated:
     #   prune: false
