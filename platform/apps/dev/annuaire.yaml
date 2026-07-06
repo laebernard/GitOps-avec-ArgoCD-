@@ -15,7 +15,7 @@ spec:
 
   source:
     repoURL: https://github.com/laebernard/GitOps-avec-ArgoCD-.git
-    targetRevision: main
+    targetRevision: feature/PartieIII_GitOps
     path: services/annuaire/chart
     helm:
       valueFiles:
