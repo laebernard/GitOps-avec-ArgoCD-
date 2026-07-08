@@ -10,4 +10,4 @@ env:
 
 # TODO : si vous voulez une seule réplique en dev pour économiser des ressources,
 # surchargez replicaCount ici.
-replicaCount: 1
+replicaCount: 2
