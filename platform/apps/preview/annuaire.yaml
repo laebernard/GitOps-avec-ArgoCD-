@@ -20,14 +20,16 @@ spec:
   # TODO étape 7 (défi) : ajoutez `goTemplate: true` si vous voulez utiliser
   # la syntaxe Go-template (plus puissante mais nouvelle).
   generators:
-  - pullRequest:
-      github:
-        owner: laebernard
-        repo: GitOps-avec-ArgoCD-
-        tokenRef:
-          secretName: github-token
-          key: token
-      requeueAfterSeconds: 60
+    - pullRequest:
+        github:
+          owner: laebernard
+          repo: GitOps-avec-ArgoCD-
+          tokenRef:
+            secretName: github-token
+            key: token
+        requeueAfterSeconds: 60
+        filters:
+          - branchMatch: ".*"
     # TODO : choisissez UN seul generator (commentez l'autre).
     #
     # Option A — git generator sur les branches feature/* :
