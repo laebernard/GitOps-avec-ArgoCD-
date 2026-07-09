@@ -18,22 +18,27 @@ metadata:
 
 spec:
   goTemplate: true
+
   generators:
-  - git:
-      repoURL: https://github.com/laebernard/GitOps-avec-ArgoCD-.git
-      revision: HEAD
-      branches:
-        - preview
+  - pullRequest:
+      github:
+        owner: laebernard
+        repo: GitOps-avec-ArgoCD-
+        tokenRef:
+          secretName: github-token
+          key: token
+      requeueAfterSeconds: 60
 
   template:
     metadata:
-      name: annuaire-preview-{{branchNormalized}}
+      name: annuaire-preview-{{branch_slug}}
       labels:
         devhub.io/env: preview
         devhub.io/service: annuaire
 
     spec:
       project: devhub
+
       source:
         repoURL: https://github.com/laebernard/GitOps-avec-ArgoCD-.git
         targetRevision: '{{branch}}'
@@ -43,11 +48,11 @@ spec:
             - values-preview.yaml
           parameters:
             - name: ingress.host
-              value: annuaire-{{branchNormalized}}.preview.devhub.local
+              value: annuaire-{{branch_slug}}.preview.devhub.local
 
       destination:
         server: https://kubernetes.default.svc
-        namespace: devhub-preview-{{branchNormalized}}
+        namespace: devhub-preview-{{branch_slug}}
 
       syncPolicy:
         automated:
