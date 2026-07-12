@@ -204,3 +204,98 @@ resultat :
 service/release-name-annuaire created (dry run)
 deployment.apps/release-name-annuaire created (dry run)
 ingress.networking.k8s.io/release-name-annuaire created (dry run)
+
+
+
+---
+
+## Etape 5 -  Installer ArgoCD et déclarer la première Application
+
+### Capture d’écran de l’Application Healthy et Synced
+
+![ArgoCD Applications](images/etape5-argocd-applications.png)
+
+### Comparaison entre selfHeal: true et prune: true
+
+#### selfHeal: true
+
+Objectif :
+ArgoCD surveille en continu l’état du cluster.
+Si quelqu’un modifie une ressource à la main (kubectl edit, kubectl scale…), ArgoCD remet immédiatement la ressource dans l’état Git.
+
+Exemple :
+Un développeur augmente temporairement les replicas pour débugger :
+
+Conséquence :
+   ArgoCD détecte le drift (cluster modifier manuellement) -> ArgoCD remet les replicas à la valeur Git -> Le développeur perd son test en cours
+
+Danger : rollback automatique non désiré.
+
+#### prune: true
+
+Objectif:
+Si un fichier YAML est supprimé du repo, ArgoCD supprime automatiquement la ressource correspondante dans le cluster.
+
+Exemple :
+Un membre de l’équipe supprime par erreur
+
+Conséquence :
+  ArgoCD voit que le Deployment n’existe plus dans Git -> ArgoCD le supprime -> service annuaire tombe
+
+Danger : possibilité de supprimer des resspurces involontairement.
+
+
+
+---
+
+## Etape 6 - Le pattern App of Apps
+
+## Pourquoi le pattern App of Apps n’est-il pas équivalent à une simple kubectl apply -f apps/dev/ ?
+
+### kubectl apply
+
+```sh
+kubectl apply -f apps/dev/
+```
+
+la commande kubectl apply permet un déploiement immédiat mais :
+
+ - pas de suivi
+ - pas de correction automatique
+ - pas de gestion du drift (cluster modifier manuellement)
+ - pas de rollback
+ - pas d'historique GitOps
+
+Une fois les manifests appliqués :
+
+- Kubernetes ne vérifie plus si le cluster correspond au Git.
+- Si quelqu’un modifie une ressource à la main, le cluster diverge.
+- Si un fichier est supprimé dans Git, Kubernetes ne supprime rien.
+- Si un fichier change dans Git, Kubernetes ne met rien à jour.
+
+### App of Apps
+
+Le pattern App of Apps lit le dossier en continu et permet :
+
+ - synchronisation automatique des applications enfants
+ - prune (si suppression d'un fichier dans git = ArgoCD supprime la ressource)
+ - vérification des erreurs
+ - rollback
+ - historique GitOps
+ - sécurité avec gestion des autorisations
+
+### Conclusion
+| kubectl apply              | App of Apps                 |
+|----------------------------|-----------------------------|
+| Déploiement ponctuel       | Déploiement continu         |
+| Pas de drift correction    | Self-heal                   |
+| Pas de prune               | Prune automatique           |
+| Pas de sécurité            | AppProject                  |
+| Pas de rollback            | Historique + rollback       |
+| Pas de supervision         | Health checks               |
+| Pas de GitOps              | Git = source de vérité      |
+
+
+### Capture d’écran de l’Application Healthy et Synced
+
+![ArgoCD Applications](images/etape6-argocd-applications.png)
