@@ -1,15 +1,3 @@
-# ApplicationSet : annuaire — previews par branche.
-#
-# C'est l'étape 7. Lisez la doc avant : les generators sont nombreux et
-# leur subtilités piègent.
-#   Doc : https://argo-cd.readthedocs.io/en/stable/operator-manual/applicationset/
-#
-# Deux options possibles :
-#   - `git` generator (sur branches) — le plus simple, polling 3 min.
-#   - `pullRequest` generator (sur PRs ouvertes) — requiert un token GitHub.
-#
-# Choisissez et justifiez dans RAPPORT.md.
-
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
@@ -17,21 +5,19 @@ metadata:
   namespace: argocd
 
 spec:
-  goTemplate: true
-
   generators:
-  - pullRequest:
-      github:
-        owner: laebernard
-        repo: GitOps-avec-ArgoCD-
-        tokenRef:
-          secretName: github-token
-          key: token
-      requeueAfterSeconds: 60
+    - pullRequest:
+        github:
+          owner: laebernard
+          repo: GitOps-avec-ArgoCD-
+          tokenRef:
+            secretName: github-token
+            key: token
+        requeueAfterSeconds: 60
 
   template:
     metadata:
-      name: annuaire-preview-{{branch_slug}}
+      name: annuaire-preview-{{number}}
       labels:
         devhub.io/env: preview
         devhub.io/service: annuaire
@@ -41,18 +27,18 @@ spec:
 
       source:
         repoURL: https://github.com/laebernard/GitOps-avec-ArgoCD-.git
-        targetRevision: '{{branch}}'
+        targetRevision: '{{head_sha}}'
         path: services/annuaire/chart
         helm:
           valueFiles:
             - values-preview.yaml
           parameters:
             - name: ingress.host
-              value: annuaire-{{branch_slug}}.preview.devhub.local
+              value: annuaire-pr-{{number}}.preview.devhub.local
 
       destination:
         server: https://kubernetes.default.svc
-        namespace: devhub-preview-{{branch_slug}}
+        namespace: devhub-preview-pr-{{number}}
 
       syncPolicy:
         automated:
